@@ -6,13 +6,54 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 
+/**
+ * Public utility class for securely hashing collections of strings.
+ *
+ * This class is intended to be used to generate secure passwords for various
+ * websites and services based on a passphrase or password and a unique identifier
+ * for each service.
+ *
+ * For example:
+ *
+ * {@code
+ *  PasswordGenerator.generate(List.of("google.com", "My5uper$s3cretP4s5w0rd"));
+ * }
+ * ... will produce "0r/8mnF/Y1veLa4DYcNHIH42o", while:
+ *
+ * {@code
+ *  PasswordGenerator.generate(List.of("reddit.com", "My5uper$s3cretP4s5w0rd"));
+ * }
+ * ... will produce "ckhMlnl1P+Y9IAxI7otccnpI6".
+ */
 public class PasswordGenerator {
     private static final int DEFAULT_LENGTH = 25;
 
+    /**
+     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     *
+     * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * This method behaves exactly as if calling {@code generate(Collection<String>, int)} but with a
+     * default {@code maximumLength} value of 25.
+     *
+     * @see #generate(Collection, int)
+     * @param phrase the collection of Strings to hash.
+     * @return the concatenated, hashed, and encoded collection of Strings.
+     */
     public static String generate(Collection<String> phrase) {
         return generate(phrase, DEFAULT_LENGTH);
     }
 
+    /**
+     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     *
+     * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * @param phrase the collection of Strings to hash.
+     * @param maximumLength the maximum length of the resulting string. Strings returned by this method
+     *                      will never exceed this length.
+     * @return the concatenated, hashed, and encoded collection of Strings.
+     */
     public static String generate(Collection<String> phrase, int maximumLength) {
         validate(phrase, maximumLength);
 
