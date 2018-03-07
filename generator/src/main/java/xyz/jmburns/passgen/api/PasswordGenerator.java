@@ -30,6 +30,10 @@ import java.util.function.UnaryOperator;
 public class PasswordGenerator {
     private static final int DEFAULT_LENGTH = 25;
 
+    private PasswordGenerator() {
+        throw new AssertionError("PasswordGenerator is not instantiable");
+    }
+
     /**
      * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
      *
