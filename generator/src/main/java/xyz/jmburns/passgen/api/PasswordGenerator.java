@@ -14,16 +14,18 @@ import java.util.function.UnaryOperator;
  * for each service.
  *
  * For example:
- *
+ * <br>
  * {@code
  *  PasswordGenerator.generate(List.of("google.com", "My5uper$s3cretP4s5w0rd"));
  * }
- * ... will produce "0r/8mnF/Y1veLa4DYcNHIH42o", while:
- *
+ * <br>
+ * ... will produce {@code "0r/8mnF/Y1veLa4DYcNHIH42o"}, while:
+ * <br>
  * {@code
  *  PasswordGenerator.generate(List.of("reddit.com", "My5uper$s3cretP4s5w0rd"));
  * }
- * ... will produce "ckhMlnl1P+Y9IAxI7otccnpI6".
+ * <br>
+ * ... will produce {@code "ckhMlnl1P+Y9IAxI7otccnpI6"}.
  */
 public class PasswordGenerator {
     private static final int DEFAULT_LENGTH = 25;
@@ -32,13 +34,13 @@ public class PasswordGenerator {
      * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
-     *
+     * <br><br>
      * This method behaves exactly as if calling {@code generate(Collection<String>, int)} but with a
      * default {@code maximumLength} value of 25.
      *
      * @see #generate(Collection, int)
-     * @param phrase the collection of Strings to hash.
-     * @return the concatenated, hashed, and encoded collection of Strings.
+     * @param phrase the collection of Strings to hash
+     * @return the concatenated, hashed, and encoded collection of Strings
      * @throws IllegalArgumentException if {@code phrase} is null or empty
      */
     public static String generate(Collection<String> phrase) {
@@ -50,10 +52,10 @@ public class PasswordGenerator {
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
      *
-     * @param phrase the collection of Strings to hash.
+     * @param phrase the collection of Strings to hash
      * @param maximumLength the maximum length of the resulting string. Strings returned by this method
-     *                      will never exceed this length.
-     * @return the concatenated, hashed, and encoded collection of Strings.
+     *                      will never exceed this length
+     * @return the concatenated, hashed, and encoded collection of Strings
      * @throws IllegalArgumentException if {@code phrase} is null or empty, or if {@code maximumLength} is negative
      */
     public static String generate(Collection<String> phrase, int maximumLength) {
