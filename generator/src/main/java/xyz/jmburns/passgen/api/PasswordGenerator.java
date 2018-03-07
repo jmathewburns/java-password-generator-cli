@@ -39,6 +39,7 @@ public class PasswordGenerator {
      * @see #generate(Collection, int)
      * @param phrase the collection of Strings to hash.
      * @return the concatenated, hashed, and encoded collection of Strings.
+     * @throws IllegalArgumentException if {@code phrase} is null or empty
      */
     public static String generate(Collection<String> phrase) {
         return generate(phrase, DEFAULT_LENGTH);
@@ -53,6 +54,7 @@ public class PasswordGenerator {
      * @param maximumLength the maximum length of the resulting string. Strings returned by this method
      *                      will never exceed this length.
      * @return the concatenated, hashed, and encoded collection of Strings.
+     * @throws IllegalArgumentException if {@code phrase} is null or empty, or if {@code maximumLength} is negative
      */
     public static String generate(Collection<String> phrase, int maximumLength) {
         validate(phrase, maximumLength);
