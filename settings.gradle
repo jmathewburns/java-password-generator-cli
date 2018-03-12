@@ -1,3 +1,5 @@
 rootProject.name = 'password-generator'
 
 include 'generator'
+include 'console-application'
+
