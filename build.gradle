@@ -1,6 +1,11 @@
 subprojects {
     apply plugin: 'java'
 
+    sourceCompatibility = 9
+
+    group 'xyz.jmburns.passgen'
+    version '0.1.2'
+
     repositories {
         jcenter()
     }
@@ -10,7 +15,17 @@ subprojects {
         testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.1.0'
     }
 
+    //noinspection GroovyAssignabilityCheck
     test {
         useJUnitPlatform()
+    }
+
+    compileJava {
+        doFirst {
+            options.compilerArgs = [
+                    '--module-path', classpath.asPath
+            ]
+            classpath = files()
+        }
     }
 }
