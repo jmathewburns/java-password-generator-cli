@@ -48,6 +48,8 @@ import java.util.function.UnaryOperator;
  * ... will produce {@code "ckhMlnl1P+Y9IAxI7otccnpI6"}.
  */
 public class PasswordGenerator {
+    private static final String WHITESPACE = "\\s";
+    private static final String NOTHING = "";
     private static final int DEFAULT_LENGTH = 25;
 
     private PasswordGenerator() {
@@ -88,6 +90,7 @@ public class PasswordGenerator {
         return phrase.stream()
                 .sorted()
                 .reduce(String::concat)
+                .map(PasswordGenerator::normalise)
                 .map(PasswordGenerator::hash)
                 .map(PasswordGenerator::encode)
                 .map(limitLength(maximumLength))
@@ -102,6 +105,10 @@ public class PasswordGenerator {
         if (maximumLength < 0) {
             throw new IllegalArgumentException("Maximum length cannot be negative.");
         }
+    }
+
+    private static String normalise(String message) {
+        return message.trim().toLowerCase().replaceAll(WHITESPACE, NOTHING);
     }
 
     private static String hash(String message) {
