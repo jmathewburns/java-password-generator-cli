@@ -1,7 +1,10 @@
 ext.config = [
         project: 'PassGen',
         author: 'Jacques Burns',
-        year: '2018'
+        year: '2018',
+        group_id: 'xyz.jmburns',
+        artifact_id: 'passgen',
+        version: '0.0.0'
 ]
 
 buildscript {
@@ -15,13 +18,11 @@ buildscript {
     }
 }
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'com.github.hierynomus.license'
+    apply from: "${rootProject.rootDir}/gradle/java9.gradle"
+    apply from: "${rootProject.rootDir}/gradle/licensing.gradle"
 
-    sourceCompatibility = 9
-
-    group 'xyz.jmburns.passgen'
-    version '0.1.2'
+    group config.group_id + '.' + config.artifact_id
+    version config.version
 
     repositories {
         jcenter()
@@ -35,27 +36,5 @@ subprojects {
     //noinspection GroovyAssignabilityCheck
     test {
         useJUnitPlatform()
-    }
-
-    compileJava {
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', classpath.asPath
-            ]
-            classpath = files()
-        }
-    }
-
-    license {
-        header = file("${rootProject.rootDir}./gradle/HEADER")
-        strictCheck = true
-        ignoreFailures = true
-        mapping {
-            java = 'SLASHSTAR_STYLE'
-            fxml = 'XML_STYLE'
-        }
-        ext.year = config.year
-        ext.author = config.author
-        ext.project = config.name
     }
 }
