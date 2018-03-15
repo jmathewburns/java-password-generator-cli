@@ -39,13 +39,17 @@ import java.util.function.UnaryOperator;
  *  PasswordGenerator.generate(List.of("google.com", "My5uper$s3cretP4s5w0rd"));
  * }
  * <br>
- * ... will produce {@code "0r/8mnF/Y1veLa4DYcNHIH42o"}, while:
+ * ... will produce {@code "a/A0ZkWFaaKpbLPsNJSDg8EnZ"}, while:
  * <br>
  * {@code
  *  PasswordGenerator.generate(List.of("reddit.com", "My5uper$s3cretP4s5w0rd"));
  * }
  * <br>
- * ... will produce {@code "ckhMlnl1P+Y9IAxI7otccnpI6"}.
+ * ... will produce {@code "a/A0uHVL6IxS8lwv+Xkl+ACMG"}.
+ *
+ * The "a/A0" is manually included on to each password to satisfy any requirements imposed
+ * by a website on the content of a password (upper- and lowercase letters, symbols, numbers,
+ * et cetera).
  */
 public class PasswordGenerator {
     private static final String WHITESPACE = "\\s";
@@ -57,9 +61,19 @@ public class PasswordGenerator {
     }
 
     /**
-     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     * Produces a securely hashed and encoded concatenation of the given {@code String} instances.
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * To lessen the impact of user errors such as inconsistent casing and extraneous spaces,
+     * this method hashes the input in a case and spacing insensitive way.
+     *
+     * For example, calling {@code generate} with a list of "foo", "b  ar", and "BAZ" will
+     * produce exactly the same result as calling it with a list of "FoO", "BAR", and "ba z".
+     *
+     * Additionally, to satisfy any requirements a website or service impose on password
+     * content (symbols, numbers, upper- and lowercase letters, etc.), all {@code String}
+     * instances produced by this method begin with the sequence "a/A0".
      * <br><br>
      * This method behaves exactly as if calling {@code generate(Collection<String>, int)} but with a
      * default {@code maximumLength} value of 25.
@@ -74,9 +88,19 @@ public class PasswordGenerator {
     }
 
     /**
-     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     * Produces a securely hashed and encoded concatenation of the given {@code String} instances.
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * To lessen the impact of user errors such as inconsistent casing and extraneous spaces,
+     * this method hashes the input in a case and spacing insensitive way.
+     *
+     * For example, calling {@code generate} with a list of "foo", "b  ar", and "BAZ" will
+     * produce exactly the same result as calling it with a list of "FoO", "BAR", and "ba z".
+     *
+     * Additionally, to satisfy any requirements a website or service impose on password
+     * content (symbols, numbers, upper- and lowercase letters, etc.), all {@code String}
+     * instances produced by this method begin with the sequence "a/A0".
      *
      * @param phrase the collection of Strings to hash
      * @param maximumLength the maximum length of the resulting string. Strings returned by this method

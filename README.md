@@ -24,7 +24,7 @@ $ passgen --max-length 15 correct horse battery staple
 
 Will produce the following output:
 ```
-Password: vs54IaUZ+1+OI9p
+Password: a/A0z8+yETMSn4r
 Copy to clipboard? [Y/N]
 ```
 
@@ -36,6 +36,21 @@ mode wherein the application will prompt the user for the desired website name, 
 password length, and three security questions. All but the website name question can be ignored, but
 for the application to be effective, at least one security question should be answered. It is 
 recommended to answer at least two. 
+
+### Output
+
+The output produced by this application is a SHA3-512 hashed and base 64 encoded concatenation
+of all words in the given phrase.
+
+To lessen the impact of user errors such as inconsistent casing and extraneous spaces,
+the application hashes the the phrase in a case and spacing insensitive way.
+
+For example, running `passgen "foo" "b  ar" "BAZ"` will
+produce exactly the same result as `passgen "FoO" "BAR" "ba z"`.
+
+Additionally, to satisfy any requirements a website or service impose on password
+content (symbols, numbers, upper- and lowercase letters, etc.), all passwords 
+produced by this method begin with the sequence "a/A0".
 
 ## Requirements
 
