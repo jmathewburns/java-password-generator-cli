@@ -89,9 +89,9 @@ public class PasswordGenerator {
         validate(phrase, maximumLength);
 
         return phrase.stream()
+                .map(PasswordGenerator::normalise)
                 .sorted()
                 .reduce(String::concat)
-                .map(PasswordGenerator::normalise)
                 .map(PasswordGenerator::hash)
                 .map(PasswordGenerator::encode)
                 .map(PasswordGenerator::satisfyMinimalRequirements)
