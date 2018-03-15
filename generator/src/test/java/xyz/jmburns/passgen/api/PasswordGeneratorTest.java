@@ -81,6 +81,13 @@ public class PasswordGeneratorTest {
         }
 
         @Test
+        void shouldBeCaseAndSpacingInsensitive() {
+            String expected = PasswordGenerator.generate(List.of("foo", "b  ar","BAZ"));
+            String actual = PasswordGenerator.generate(List.of("FoO", "BAR", "ba z"));
+            assertEquals(expected, actual);
+        }
+
+        @Test
         void shouldSatisfyPasswordCharacterRequirements() {
             String password = PasswordGenerator.generate(TEST_PHRASE);
 
