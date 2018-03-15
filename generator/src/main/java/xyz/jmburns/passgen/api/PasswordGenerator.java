@@ -39,15 +39,21 @@ import java.util.function.UnaryOperator;
  *  PasswordGenerator.generate(List.of("google.com", "My5uper$s3cretP4s5w0rd"));
  * }
  * <br>
- * ... will produce {@code "0r/8mnF/Y1veLa4DYcNHIH42o"}, while:
+ * ... will produce {@code "a/A0ZkWFaaKpbLPsNJSDg8EnZ"}, while:
  * <br>
  * {@code
  *  PasswordGenerator.generate(List.of("reddit.com", "My5uper$s3cretP4s5w0rd"));
  * }
  * <br>
- * ... will produce {@code "ckhMlnl1P+Y9IAxI7otccnpI6"}.
+ * ... will produce {@code "a/A0uHVL6IxS8lwv+Xkl+ACMG"}.
+ *
+ * The "a/A0" is manually included on to each password to satisfy any requirements imposed
+ * by a website on the content of a password (upper- and lowercase letters, symbols, numbers,
+ * et cetera).
  */
 public class PasswordGenerator {
+    private static final String WHITESPACE = "\\s";
+    private static final String NOTHING = "";
     private static final int DEFAULT_LENGTH = 25;
 
     private PasswordGenerator() {
@@ -55,9 +61,19 @@ public class PasswordGenerator {
     }
 
     /**
-     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     * Produces a securely hashed and encoded concatenation of the given {@code String} instances.
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * To lessen the impact of user errors such as inconsistent casing and extraneous spaces,
+     * this method hashes the input in a case and spacing insensitive way.
+     *
+     * For example, calling {@code generate} with a list of "foo", "b  ar", and "BAZ" will
+     * produce exactly the same result as calling it with a list of "FoO", "BAR", and "ba z".
+     *
+     * Additionally, to satisfy any requirements a website or service impose on password
+     * content (symbols, numbers, upper- and lowercase letters, etc.), all {@code String}
+     * instances produced by this method begin with the sequence "a/A0".
      * <br><br>
      * This method behaves exactly as if calling {@code generate(Collection<String>, int)} but with a
      * default {@code maximumLength} value of 25.
@@ -72,9 +88,19 @@ public class PasswordGenerator {
     }
 
     /**
-     * Produces as securely hashed and encoded concatenation of the given {@code String} instances.
+     * Produces a securely hashed and encoded concatenation of the given {@code String} instances.
      *
      * SHA3-512 is used for hashing, and encoding is done in URL-unsafe base 64 format.
+     *
+     * To lessen the impact of user errors such as inconsistent casing and extraneous spaces,
+     * this method hashes the input in a case and spacing insensitive way.
+     *
+     * For example, calling {@code generate} with a list of "foo", "b  ar", and "BAZ" will
+     * produce exactly the same result as calling it with a list of "FoO", "BAR", and "ba z".
+     *
+     * Additionally, to satisfy any requirements a website or service impose on password
+     * content (symbols, numbers, upper- and lowercase letters, etc.), all {@code String}
+     * instances produced by this method begin with the sequence "a/A0".
      *
      * @param phrase the collection of Strings to hash
      * @param maximumLength the maximum length of the resulting string. Strings returned by this method
@@ -82,14 +108,17 @@ public class PasswordGenerator {
      * @return the concatenated, hashed, and encoded collection of Strings
      * @throws IllegalArgumentException if {@code phrase} is null or empty, or if {@code maximumLength} is negative
      */
+    @SuppressWarnings("ConstantConditions")
     public static String generate(Collection<String> phrase, int maximumLength) {
         validate(phrase, maximumLength);
 
         return phrase.stream()
+                .map(PasswordGenerator::normalise)
                 .sorted()
                 .reduce(String::concat)
                 .map(PasswordGenerator::hash)
                 .map(PasswordGenerator::encode)
+                .map(PasswordGenerator::satisfyMinimalRequirements)
                 .map(limitLength(maximumLength))
                 .get();
     }
@@ -102,6 +131,10 @@ public class PasswordGenerator {
         if (maximumLength < 0) {
             throw new IllegalArgumentException("Maximum length cannot be negative.");
         }
+    }
+
+    private static String normalise(String message) {
+        return message.toLowerCase().replaceAll(WHITESPACE, NOTHING);
     }
 
     private static String hash(String message) {
@@ -120,6 +153,10 @@ public class PasswordGenerator {
     private static String encode(String message) {
         Base64.Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(message.getBytes());
+    }
+
+    private static String satisfyMinimalRequirements(String message) {
+        return "a/A0".concat(message);
     }
 
     private static UnaryOperator<String> limitLength(int maximumLength) {
