@@ -2,21 +2,21 @@ apply plugin: 'application'
 
 dependencies {
     implementation project(':generator')
-    implementation "commons-cli:commons-cli:1.4"
+    implementation 'commons-cli:commons-cli:1.4'
 }
 
-mainClassName = 'xyz.jmburns.passgen.application.Main'
+mainClassName = "${config.group_id}.${config.artifact_id}.application.Main"
 
 run.doFirst {
     standardInput = System.in
 }
 
 jar {
-    baseName = 'passgen-app'
+    baseName = config.artifact_id + '-app'
     manifest.attributes('Main-Class' : mainClassName)
 }
 
 distTar.baseName = jar.baseName
 distZip.baseName = jar.baseName
 
-startScripts.applicationName = 'passgen'
+startScripts.applicationName = config.artifact_id
