@@ -1,5 +1,22 @@
+ext.config = [
+        project: 'PassGen',
+        author: 'Jacques Burns',
+        year: '2018'
+]
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.14.0'
+    }
+}
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'com.github.hierynomus.license'
 
     sourceCompatibility = 9
 
@@ -27,5 +44,18 @@ subprojects {
             ]
             classpath = files()
         }
+    }
+
+    license {
+        header = file("${rootProject.rootDir}./gradle/HEADER")
+        strictCheck = true
+        ignoreFailures = true
+        mapping {
+            java = 'SLASHSTAR_STYLE'
+            fxml = 'XML_STYLE'
+        }
+        ext.year = config.year
+        ext.author = config.author
+        ext.project = config.name
     }
 }
