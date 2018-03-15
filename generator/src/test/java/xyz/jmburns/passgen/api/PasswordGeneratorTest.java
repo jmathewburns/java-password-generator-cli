@@ -3,11 +3,18 @@ package xyz.jmburns.passgen.api;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PasswordGeneratorTest {
+    private static final Pattern UPPERCASE_LETTERS = Pattern.compile("[A-Z]+");
+    private static final Pattern LOWERCASE_LETTERS = Pattern.compile("[a-z]+");
+    private static final Pattern NUMBERS = Pattern.compile("[0-9]+");
+    private static final Pattern SYMBOLS = Pattern.compile("[!@?/#$%&]+");
+
     private static final List<String> TEST_PHRASE = List.of("correct", "horse", "battery", "staple");
     private static final int TEST_MAXIMUM_LENGTH = 2;
 
@@ -47,6 +54,46 @@ public class PasswordGeneratorTest {
                 String latest = PasswordGenerator.generate(TEST_PHRASE);
                 assertEquals(expected, latest);
             }
+        }
+
+        @Test
+        void shouldBeCaseInsensitive() {
+            List<String> withDifferentCasing = new ArrayList<>(TEST_PHRASE.size());
+            withDifferentCasing.addAll(TEST_PHRASE);
+            withDifferentCasing.set(0, withDifferentCasing.get(0).toUpperCase());
+
+            String expected = PasswordGenerator.generate(TEST_PHRASE);
+            String actual = PasswordGenerator.generate(withDifferentCasing);
+
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        void shouldBeSpacingInsensitive() {
+            List<String> withDifferentSpacing = new ArrayList<>(TEST_PHRASE.size());
+            withDifferentSpacing.addAll(TEST_PHRASE);
+            withDifferentSpacing.set(0, withDifferentSpacing.get(0).concat(" "));
+
+            String expected = PasswordGenerator.generate(TEST_PHRASE);
+            String actual = PasswordGenerator.generate(withDifferentSpacing);
+
+            assertEquals(expected, actual);
+        }
+
+        @Test
+        void shouldSatisfyPasswordCharacterRequirements() {
+            String password = PasswordGenerator.generate(TEST_PHRASE);
+
+            assertAll(
+                    () -> contains(password, UPPERCASE_LETTERS),
+                    () -> contains(password, LOWERCASE_LETTERS),
+                    () -> contains(password, NUMBERS),
+                    () -> contains(password, SYMBOLS)
+            );
+        }
+
+        private boolean contains(String password, Pattern pattern) {
+            return pattern.matcher(password).matches();
         }
     }
 
