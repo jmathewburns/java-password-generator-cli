@@ -84,6 +84,7 @@ public class PasswordGenerator {
      * @return the concatenated, hashed, and encoded collection of Strings
      * @throws IllegalArgumentException if {@code phrase} is null or empty, or if {@code maximumLength} is negative
      */
+    @SuppressWarnings("ConstantConditions")
     public static String generate(Collection<String> phrase, int maximumLength) {
         validate(phrase, maximumLength);
 
@@ -93,6 +94,7 @@ public class PasswordGenerator {
                 .map(PasswordGenerator::normalise)
                 .map(PasswordGenerator::hash)
                 .map(PasswordGenerator::encode)
+                .map(PasswordGenerator::satisfyMinimalRequirements)
                 .map(limitLength(maximumLength))
                 .get();
     }
@@ -108,7 +110,7 @@ public class PasswordGenerator {
     }
 
     private static String normalise(String message) {
-        return message.trim().toLowerCase().replaceAll(WHITESPACE, NOTHING);
+        return message.toLowerCase().replaceAll(WHITESPACE, NOTHING);
     }
 
     private static String hash(String message) {
@@ -127,6 +129,10 @@ public class PasswordGenerator {
     private static String encode(String message) {
         Base64.Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(message.getBytes());
+    }
+
+    private static String satisfyMinimalRequirements(String message) {
+        return "a/A0".concat(message);
     }
 
     private static UnaryOperator<String> limitLength(int maximumLength) {
