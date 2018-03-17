@@ -20,6 +20,7 @@
  */
 package xyz.jmburns.passgen.application;
 
+import org.beryx.textio.StringInputReader;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextIoFactory;
 import org.beryx.textio.TextTerminal;
@@ -27,7 +28,6 @@ import org.beryx.textio.TextTerminal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.OptionalInt;
 
 final class Console {
     private final TextIO console;
@@ -38,58 +38,48 @@ final class Console {
         display = console.getTextTerminal();
     }
 
-    String promptForString(String message) {
+    public String promptForString(String message) {
         return console
                 .newStringInputReader()
                 .withInputTrimming(true)
                 .read(message);
     }
 
-    OptionalInt promptForOptionalInt(String message) {
-        Integer input = console
+    public int promptForOptionalInt(String message, int defaultValue) {
+        return console
                 .newIntInputReader()
-                .withDefaultValue(Integer.MIN_VALUE)
+                .withDefaultValue(defaultValue)
                 .read(message);
-
-        if (input.equals(Integer.MIN_VALUE)) {
-            return OptionalInt.empty();
-        } else {
-            return OptionalInt.of(input);
-        }
     }
 
-    Collection<String> promptForAllOptionalStrings(Collection<String> messages) {
+    public Collection<String> promptForAllOptionalStrings(Collection<String> messages) {
         Collection<String> result = new ArrayList<>(messages.size());
+        StringInputReader reader = console
+                                    .newStringInputReader()
+                                    .withMinLength(0);
 
         for (String message : messages) {
-            String answer = console
-                                .newStringInputReader()
-                                .withMinLength(0)
-                                .read(message);
+            String answer = reader.read(message);
             if (!answer.isEmpty()) result.add(answer);
         }
         return result;
     }
 
-    boolean promptYesOrNo(String message) {
+    public boolean promptYesOrNo(String message) {
         return console
                 .newBooleanInputReader()
                 .read(message);
     }
 
-    void display(String message) {
+    public void display(String message) {
         display.println(message);
     }
 
-    void displayRaw(String message) {
-        display(message);
-    }
-
-    void displayAllLines(List<String> messages) {
+    public void displayAllLines(List<String> messages) {
         display.println(messages);
     }
 
-    void nextLine() {
+    public void nextLine() {
         display.println();
     }
 }

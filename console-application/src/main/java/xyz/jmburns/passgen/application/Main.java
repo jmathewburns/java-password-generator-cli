@@ -147,10 +147,10 @@ class Main {
     }
 
     private int promptForMaximumPasswordLength() {
-        OptionalInt length =
-                console.promptForOptionalInt(localise("question.password_length"));
-
-        return length.orElse(DEFAULT_MAXIMUM_LENGTH);
+        return console.promptForOptionalInt(
+                localise("question.password_length"),
+                DEFAULT_MAXIMUM_LENGTH
+        );
     }
 
     private List<String> promptForPhrase() {
@@ -169,7 +169,7 @@ class Main {
 
     private void displayResult(String password) {
         String message = localise("message.result") + " " + password;
-        console.displayRaw(message);
+        console.display(message);
 
         boolean shouldCopy = console.promptYesOrNo(localise("message.clipboard"));
         if (shouldCopy) {
