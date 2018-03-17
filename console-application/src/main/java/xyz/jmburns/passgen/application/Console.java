@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-final class Console {
+public final class Console {
     private final TextIO console;
     private final TextTerminal<?> display;
 
