@@ -23,4 +23,5 @@ module xyz.jmburns.passgen.application {
     requires commons.cli;
     requires java.datatransfer;
     requires java.desktop;
+    requires text.io;
 }

@@ -28,6 +28,8 @@ import org.apache.commons.cli.HelpFormatter;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +39,7 @@ import java.util.ResourceBundle;
 import xyz.jmburns.passgen.api.PasswordGenerator;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 
 class Main {
     private static final ResourceBundle MESSAGES = ResourceBundle.getBundle("messages");
@@ -45,7 +48,7 @@ class Main {
     private static final int ERROR = 2;
     private static final int DEFAULT_MAXIMUM_LENGTH = 15;
 
-    private final LocalisedConsole console;
+    private final Console console;
     private final CommandLine arguments;
 
     static {
@@ -53,22 +56,30 @@ class Main {
                 "h",
                 "help",
                 false,
-                MESSAGES.getString("help.option.help")
+                localise("help.option.help")
         ).addOption(
                 "e",
                 "example",
                 false,
-                MESSAGES.getString("help.option.example")
+                localise("help.option.example")
         ).addOption(
                 "l",
                 "max-length",
                 true,
-                MESSAGES.getString("help.option.max_length")
+                localise("help.option.max_length")
         );
     }
 
+    private static String localise(String messageKey) {
+        return MESSAGES.getString(messageKey);
+    }
+
+    private static List<String> localiseAll(String messagesKey, String lineSplitDelimiter) {
+        return asList(localise(messagesKey).split(lineSplitDelimiter));
+    }
+
     private Main(CommandLine arguments) {
-        this.console = new LocalisedConsole(MESSAGES);
+        this.console = new Console();
         this.arguments = arguments;
     }    
     
@@ -89,17 +100,23 @@ class Main {
     }
 
     private void handleHelpRequest() {
+        PrintWriter result = new PrintWriter(new StringWriter());
+
         new HelpFormatter().printHelp(
-                MESSAGES.getString("help.usage"),
-                MESSAGES.getString("help.header"),
+                result,
+                HelpFormatter.DEFAULT_WIDTH,
+                localise("help.usage"),
+                localise("help.header"),
                 SUPPORTED_OPTIONS,
-                MESSAGES.getString("help.footer"),
-                false
+                HelpFormatter.DEFAULT_LEFT_PAD,
+                HelpFormatter.DEFAULT_DESC_PAD,
+                localise("help.footer")
         );
+        console.display(result.toString());
     }
 
     private void handleExampleExample() {
-        console.displayAllLines("help.example", "%n");
+        console.displayAllLines(localiseAll("help.example", "%n"));
     }
 
     private String generateFromArguments() {
@@ -112,7 +129,7 @@ class Main {
                 maximumLength = parseInt(maximumLengthArgument);
             }
         } catch (NumberFormatException invalidInput) {
-            console.display("error.invalid_length_option");
+            console.display(localise("error.invalid_length_option"));
             System.exit(ERROR);
         }
 
@@ -120,7 +137,7 @@ class Main {
     }
 
     private String generateFromPrompts() {
-        console.display("message.welcome");
+        console.display(localise("message.welcome"));
         console.nextLine();
 
         return PasswordGenerator.generate(
@@ -130,37 +147,32 @@ class Main {
     }
 
     private int promptForMaximumPasswordLength() {
-        OptionalInt length = console.promptForOptionalInt(
-                "question.password_length",
-                "error.invalid_integer"
+        return console.promptForOptionalInt(
+                localise("question.password_length"),
+                DEFAULT_MAXIMUM_LENGTH
         );
-
-        return length.orElse(DEFAULT_MAXIMUM_LENGTH);
     }
 
     private List<String> promptForPhrase() {
         List<String> phrase = new ArrayList<>();
 
-        String websiteName = console.promptForString(
-                "question.website_name",
-                "error.required_answer"
-        );
+        String websiteName = console.promptForString(localise("question.website_name"));
         phrase.add(websiteName);
 
-        phrase.addAll(console.promptForAllOptionalStrings(
+        phrase.addAll(console.promptForAllOptionalStrings(localiseAll(
                 "question.security_questions",
-                "&")
-        );
+                "&"
+        )));
 
         return phrase;
     }
 
     private void displayResult(String password) {
-        String message = MESSAGES.getString("message.result") + " " + password;
-        console.displayRaw(message);
+        String message = localise("message.result") + " " + password;
+        console.display(message);
 
-        String shouldCopy = console.promptForString("message.clipboard");
-        if (shouldCopy.toLowerCase().charAt(0) == 'y') {
+        boolean shouldCopy = console.promptYesOrNo(localise("message.clipboard"));
+        if (shouldCopy) {
             copyToClipboard(password);
         }
     }
